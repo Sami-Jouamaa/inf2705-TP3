@@ -72,8 +72,8 @@ bool Window::init()
         return false;
     }
 
-    const int VSYNC = 1; // 1 on, 0 off, -1 adaptive
-    SDL_GL_SetSwapInterval(VSYNC);
+    // const int VSYNC = 1; // 1 on, 0 off, -1 adaptive
+    // SDL_GL_SetSwapInterval(VSYNC);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();

@@ -7,7 +7,7 @@
 #include "vertices_data.h"
 #include <iostream>
 
-#include "../corrector/shaders_strings.h"
+// #include "../corrector/shaders_strings.h"
 
 Resources::Resources()
 {
