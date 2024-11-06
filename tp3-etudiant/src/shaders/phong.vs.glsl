@@ -51,7 +51,6 @@ layout (std140) uniform LightingBlock
 void main()
 {
     // TODO
-    // pretty much copy the code from phong.fs into the vertex shader.
     vec3 pos = (modelView * vec4(position, 1)).xyz;
     gl_Position = mvp * vec4(position, 1);
     attribOut.obsPos = (-pos);

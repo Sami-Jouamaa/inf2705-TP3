@@ -52,6 +52,12 @@ void main()
 {
     // TODO
     vec3 pos = (modelView * vec4(position,1)).xyz;
+    vec3 O = normalize(-pos);
+    vec3 N = normalize(normalMatrix * normal);
+    vec3 L0 = normalize((view * vec4(lights[0].position, 0)).xyz - pos);
+    vec3 L1 = normalize((view * vec4(lights[1].position, 0)).xyz - pos);
+    vec3 L2 = normalize((view * vec4(lights[1].position, 0)).xyz - pos);
+
     gl_Position = mvp * vec4(pos, 1);
     attribOut.texCoords = texCoords;
 }
