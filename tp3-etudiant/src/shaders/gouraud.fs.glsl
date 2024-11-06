@@ -17,7 +17,6 @@ out vec4 FragColor;
 void main()
 {
     // TODO
-    FragColor = vec4(attribIn.ambient, 1);
-    FragColor = vec4(attribIn.diffuse, 1);
-    FragColor = vec4((attribIn.specular * attribIn.emission) , 1);
+    // FragColor = attribIn.ambient; 
+    // add all the ins into fragcolor
 }

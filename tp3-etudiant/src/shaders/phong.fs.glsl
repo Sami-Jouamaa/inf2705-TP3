@@ -90,7 +90,6 @@ void main()
     specularTemp += mat.specular * lights[1].specular * pow(spec1, mat.shininess);
     specularTemp += mat.specular * lights[2].specular * pow(spec2, mat.shininess);
 
-    // vec4 specularTemp = texure * vec4(mat.specular, 1) * mat.shininess * dot(attribIn.lightDir[0], normal);
-
     FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
+    // FragColor = vec4(diffuseTemp, 1);
 }
