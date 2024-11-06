@@ -44,6 +44,52 @@ uniform sampler2D specularSampler;
 
 out vec4 FragColor;
 
+vec3 calculateAmbientTemp()
+{
+    vec3 ambientResult = mat.emission + mat.ambient * lightModelAmbient;
+    for (int i = 0; i < 3; i++)
+    {
+        ambientResult += mat.ambient * lights[i].ambient;
+    }
+    return ambientResult;
+}
+
+vec3 calculateDiffuseTemp(vec3 N)
+{
+    vec3 diffuseResult = vec3(0);
+    for (int i = 0; i < 3; i++)
+    {
+        vec3 L = normalize(attribIn.lightDir[i]);
+        float NdotL = max(0.0, dot(N, L));
+        diffuseResult += mat.diffuse * lights[i].diffuse * NdotL;
+    }
+    return diffuseResult;
+}
+
+vec3 calculateSpecularBlinn(vec3 O, vec3 N)
+{
+    vec3 specularResult = vec3(0);
+    for (int i = 0; i < 3; i++)
+    {
+        vec3 L = normalize(attribIn.lightDir[i]);
+        float spec = max(0.0, dot(normalize(L + O), N));
+        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+    }
+    return specularResult;
+}
+
+vec3 calculateNormalSpecular(vec3 O, vec3 N)
+{
+    vec3 specularResult = vec3(0);
+    for (int i = 0; i < 3; i++)
+    {
+        vec3 L = normalize(attribIn.lightDir[i]);
+        float spec = max(0.0, dot(reflect(-L, N), O));
+        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+    }
+    return specularResult;
+}
+
 void main()
 {
     // TODO
@@ -54,42 +100,17 @@ void main()
     vec3 L2 = normalize(attribIn.lightDir[2]);
 
     vec4 texture = texture2D(diffuseSampler, attribIn.texCoords);
-    vec3 ambientTemp;
-    vec3 diffuseTemp;
-    vec3 specularTemp;
-
-    ambientTemp = mat.emission + mat.ambient * lightModelAmbient;
-    for (int i = 0; i < 3; i++)
+    vec3 ambientTemp = calculateAmbientTemp();
+    vec3 diffuseTemp = calculateDiffuseTemp(N);
+    vec3 specularTemp = vec3(0);
+    if (useBlinn)
     {
-        ambientTemp += mat.ambient * lights[i].ambient;
-    }
-
-    float NdotL0 = max(0.0, dot(N, L0));
-    float NdotL1 = max(0.0, dot(N, L1));
-    float NdotL2 = max(0.0, dot(N, L2));
-    diffuseTemp = mat.diffuse * lights[0].diffuse * NdotL0;
-    diffuseTemp += mat.diffuse * lights[1].diffuse * NdotL1;
-    diffuseTemp += mat.diffuse * lights[2].diffuse * NdotL2;
-
-    float spec0;
-    float spec1;
-    float spec2;
-    if (useBlinn) 
-    {
-        spec0 = max(0.0, dot(normalize(L0 + O), N));
-        spec1 = max(0.0, dot(normalize(L1 + O), N));
-        spec2 = max(0.0, dot(normalize(L2 + O), N));
+        specularTemp = calculateSpecularBlinn(O, N);
     }
     else
     {
-        spec0 = max(0.0, dot(reflect(-L0, N), O));
-        spec1 = max(0.0, dot(reflect(-L1, N), O));
-        spec2 = max(0.0, dot(reflect(-L2, N), O));
+        specularTemp = calculateNormalSpecular(O, N);
     }
-    specularTemp = mat.specular * lights[0].specular * pow(spec0, mat.shininess);
-    specularTemp += mat.specular * lights[1].specular * pow(spec1, mat.shininess);
-    specularTemp += mat.specular * lights[2].specular * pow(spec2, mat.shininess);
 
     FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
-    // FragColor = vec4(diffuseTemp, 1);
 }

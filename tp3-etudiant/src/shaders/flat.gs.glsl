@@ -56,4 +56,5 @@ layout (std140) uniform LightingBlock
 void main()
 {
     // TODO
+    
 }
