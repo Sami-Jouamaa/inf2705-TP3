@@ -115,7 +115,25 @@ void SceneLighting::run(Window& w)
     switch (m_currentShading)
     {
     case 0: 
-        m_resources.flat.use();
+        GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+        // Compile each shader and check for errors
+        glCompileShader(vertexShader);
+
+        glCompileShader(geometryShader);
+
+        glCompileShader(fragmentShader);
+
+        // Link the program and check for linking errors
+        GLuint shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, geometryShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+        ShaderProgram.use();
+
         viewMatrixLocation = m_resources.viewLocationFlat;
         mvpMatrixLocation = m_resources.mvpLocationFlat;
         modelViewMatrixLocation = m_resources.modelViewLocationFlat;
