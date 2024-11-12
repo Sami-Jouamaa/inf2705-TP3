@@ -63,23 +63,14 @@ vec3 calculateNormal() {
 
 void main()
 {
-    // Calucation of face values
-    vec3 faceNormal = calculateNormal();
-    vec3 center = (modelView * vec4((attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0, 1)).xyz;
-    
-    // Initialisation of light colors
-    vec3 ambientColor = mat.ambient * lightModelAmbient;
-    vec3 diffuseColor = vec3(0.0);
-    vec3 specularColor = vec3(0.0);
-
 
 
     for (int i = 0; i < 3; i++) {
         attribOut.texCoords = attribIn[i].texCoords;
-        attribOut.ambient = ambientColor;
+        attribOut.ambient = vec3(0.0);
         attribOut.emission = mat.emission;
-        attribOut.diffuse = diffuseColor;
-        attribOut.specular = specularColor;
+        attribOut.diffuse = vec3(0.0);
+        attribOut.specular = vec3(0.0);
         EmitVertex();
     }
     
