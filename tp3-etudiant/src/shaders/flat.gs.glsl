@@ -61,6 +61,32 @@ vec3 calculateNormal() {
     return normalize(normalMatrix * cross(side1, side2));
 }
 
+void specularBlinn(inout vec3 specularColor, in vec3 lightDir, in vec3 faceNormal, inout vec3 obsDir) {
+    vec3 halfwayVector = normalize(lightDir + obsDir);
+    float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
+    specularColor += mat.specular * light.specular * intensity;
+}
+
+void specularPhong(inout vec3 specularColor, in vec3 lightDir, in vec3 faceNormal, inout vec3 obsDir) {
+    vec3 reflectionDir = reflect(-lightDir, faceNormal);
+    float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
+    specularColor += mat.specular * light.specular * intensity;
+}
+
+void blinnPhongModelCalculation(in vec3 position, in UniversalLight light, inout vec3 ambientColor, inout vec3 diffuseColor, inout vec3 specularColor) {
+    vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
+
+    ambientColor += mat.ambient * light.ambient;
+    diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
+
+    vec3 obsDir = normalize(-center);
+    if (useBlinn) {
+        specularBlinn(specularColor, lightDir, faceNormal, obsDir);
+    } else {
+        specularPhong(specularColor, lightDir, faceNormal, obsDir);
+    }
+}
+
 void main()
 {
     // Calucation of face values
@@ -73,23 +99,10 @@ void main()
     vec3 specularColor = vec3(0.0);
 
     // direction vector to observer for specular
-    vec3 obsDir = normalize(-center);
 
     for (int i = 0; i < 3; i++) {
         UniversalLight light = lights[i];
-        vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
-
-        ambientColor += mat.ambient * light.ambient;
-        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
-        if (useBlinn) {
-            vec3 halfwayVector = normalize(lightDir + obsDir);
-            float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
-            specularColor += mat.specular * light.specular * intensity;
-        } else {
-            vec3 reflectionDir = reflect(-lightDir, faceNormal);
-            float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
-            specularColor += mat.specular * light.specular * intensity;
-        }
+        blinnPhongModelCalculation(center, light, ambientColor, diffuseColor, specularColor);
     }
 
     for (int i = 0; i < 3; i++) {
