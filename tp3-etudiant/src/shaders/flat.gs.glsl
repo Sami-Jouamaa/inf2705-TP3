@@ -73,7 +73,7 @@ void specularPhong(inout vec3 specularColor, in vec3 lightDir, in vec3 faceNorma
     specularColor += mat.specular * light.specular * intensity;
 }
 
-void blinnPhongModelCalculation(in vec3 position, in UniversalLight light, inout vec3 ambientColor, inout vec3 diffuseColor, inout vec3 specularColor) {
+void blinnPhongModelCalculation(in vec3 center, in UniversalLight light, inout vec3 ambientColor, inout vec3 diffuseColor, inout vec3 specularColor) {
     vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
 
     ambientColor += mat.ambient * light.ambient;
