@@ -51,7 +51,7 @@ layout (std140) uniform LightingBlock
 void main()
 {
     // TODO
-    vec3 pos = (modelView * vec4(position,1)).xyz;
+    vec3 pos = (modelView * vec4(position, 1)).xyz;
     vec3 fakeLight0 = (view * vec4(lights[0].position, 1)).xyz - pos;
     vec3 fakeLight1 = (view * vec4(lights[1].position, 1)).xyz - pos;
     vec3 fakeLight2 = (view * vec4(lights[2].position, 1)).xyz - pos;    

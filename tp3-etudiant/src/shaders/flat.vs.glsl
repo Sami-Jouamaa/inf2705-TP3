@@ -16,6 +16,6 @@ void main()
     // TODO
     attribOut.texCoords = texCoords;
     vec4 transformedPos = mvp * vec4(position, 1);  
-    attribOut.position = transformedPos.xyz;
+    attribOut.position = attribIn.position;
     gl_Position = mvp * vec4(position, 1);
 }

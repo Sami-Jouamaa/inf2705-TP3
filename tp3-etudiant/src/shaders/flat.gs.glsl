@@ -64,7 +64,7 @@ void main()
 
     // Calucation of face values
     vec3 faceNormal = calculateNormal();
-    vec3 center = (attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0;
+    vec3 center = modelView * ((attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0);
     
     // Initialisation of light colors
     vec3 ambientColor = material.ambient * LightingBlock.lightModelAmbient;
