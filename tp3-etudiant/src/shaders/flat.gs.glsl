@@ -92,17 +92,17 @@ void main()
         vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
         float spotFactor = 1.0;
         if (useSpotlight) {
-            float cosGamma = dot(lightDir, light.spotDirection);
+            float cosGamma = dot(lightDir, normalize(light.spotDirection));
             float minVal = cos(radians(spotOpeningAngle));
             if (cosGamma < minVal) {
                 spotFactor = 0.0;
             }
             else {
                 if (useDirect3D) {
-                float inner = min(minVal * 1.5, 1.0);
-                spotFactor = smoothstep(minVal, minVal + inner, cosGamma);
+                    float edgeWidth = 0.02;
+                    spotFactor = smoothstep(minVal - edgeWidth, minVal, cosGamma);
                 } else {
-                spotFactor = pow(cosGamma, spotExponent);
+                    spotFactor = pow(cosGamma, spotExponent);
                 }
             }
         }
