@@ -114,7 +114,7 @@ void SceneLighting::run(Window& w)
 
     switch (m_currentShading)
     {
-    case 2: 
+    case 0: 
         m_resources.flat.use();
         viewMatrixLocation = m_resources.viewLocationFlat;
         mvpMatrixLocation = m_resources.mvpLocationFlat;
@@ -128,7 +128,7 @@ void SceneLighting::run(Window& w)
         modelViewMatrixLocation = m_resources.modelViewLocationGouraud;
         normalMatrixLocation = m_resources.normalLocationGouraud;
         break;
-    case 0: 
+    case 2: 
         m_resources.phong.use();
         viewMatrixLocation = m_resources.viewLocationPhong;
         mvpMatrixLocation = m_resources.mvpLocationPhong;
