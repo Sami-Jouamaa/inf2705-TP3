@@ -48,7 +48,7 @@ Resources::Resources()
     ShaderObject geomF(GL_GEOMETRY_SHADER, readFile("shaders/flat.gs.glsl").c_str());
     ShaderObject fragmentF(GL_FRAGMENT_SHADER, readFile("shaders/gouraud.fs.glsl").c_str());
     flat.attachShaderObject(vertexF);
-    // flat.attachShaderObject(geomF);
+    flat.attachShaderObject(geomF);
     flat.attachShaderObject(fragmentF);
     flat.link();
     
@@ -57,8 +57,8 @@ Resources::Resources()
     glUniform1i(flat.getUniformLoc("specularSampler"), 1);
     
     mvpLocationFlat = flat.getUniformLoc("mvp");
-    // modelViewLocationFlat = flat.getUniformLoc("modelView");
-    // viewLocationFlat = flat.getUniformLoc("view");
-    // normalLocationFlat = flat.getUniformLoc("normalMatrix");
+    modelViewLocationFlat = flat.getUniformLoc("modelView");
+    viewLocationFlat = flat.getUniformLoc("view");
+    normalLocationFlat = flat.getUniformLoc("normalMatrix");
 }
 
