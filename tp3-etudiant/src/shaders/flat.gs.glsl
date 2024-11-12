@@ -94,9 +94,9 @@ void main()
         diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
         vec3 obsDir = normalize(-center);
         if (useBlinn) {
-            specularColor += specularBlinn(specularColor, lightDir, faceNormal, obsDir, light);
+            specularColor += specularBlinn(lightDir, faceNormal, obsDir, light);
         } else {
-            specularColor += specularPhong(specularColor, lightDir, faceNormal, obsDir, light);
+            specularColor += specularPhong(lightDir, faceNormal, obsDir, light);
         }
     }
 
