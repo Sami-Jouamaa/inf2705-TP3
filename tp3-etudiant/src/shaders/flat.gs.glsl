@@ -64,13 +64,13 @@ vec3 calculateNormal() {
 vec3 specularBlinn(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light) {
     vec3 halfwayVector = normalize(lightDir + obsDir);
     float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
-    specularColor += mat.specular * light.specular * intensity;
+    return  mat.specular * light.specular * intensity;
 }
 
 vec3 specularPhong(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light) {
     vec3 reflectionDir = reflect(-lightDir, faceNormal);
     float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
-    specularColor += mat.specular * light.specular * intensity;
+    return mat.specular * light.specular * intensity;
 }
 
 void main()
