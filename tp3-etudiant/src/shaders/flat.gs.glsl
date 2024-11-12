@@ -61,16 +61,16 @@ vec3 calculateNormal() {
     return normalize(normalMatrix * cross(side1, side2));
 }
 
-vec3 specularBlinn(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light) {
+vec3 specularBlinn(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light, in float spotFacot) {
     vec3 halfwayVector = normalize(lightDir + obsDir);
     float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
-    return  mat.specular * light.specular * intensity;
+    return  mat.specular * light.specular * intensity * spotFactor;
 }
 
-vec3 specularPhong(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light) {
+vec3 specularPhong(in vec3 lightDir, in vec3 faceNormal, in vec3 obsDir, in UniversalLight light, in float spotFactor) {
     vec3 reflectionDir = reflect(-lightDir, faceNormal);
     float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
-    return mat.specular * light.specular * intensity;
+    return mat.specular * light.specular * intensity * spotFactor;
 }
 
 void main()
@@ -88,15 +88,28 @@ void main()
 
     for (int i = 0; i < 3; i++) {
         UniversalLight light = lights[i];
-        vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
-
         ambientColor += mat.ambient * light.ambient;
-        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
+        float spotFactor = 1.0;
+        vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
+        if (useSpotlight) {
+            float cosGamma = dot(lightDir, light.spotDirection);
+            float minVal = cos(radians(spotOpeningAngle));
+            if (cosGamma < minVal) {
+                spotFactor = 0.0;
+            }
+            else if (useDirect3D) {
+                float inner = 0.1;
+                spotFactor = smoothstep(minVal, minVal + inner, cosGamma);
+            } else {
+                spotFactor = pow(cosGamma, light.spotExponent);
+            }
+        }
+        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0) * spotFactor;
         vec3 obsDir = normalize(-center);
         if (useBlinn) {
-            specularColor += specularBlinn(lightDir, faceNormal, obsDir, light);
+            specularColor += specularBlinn(lightDir, faceNormal, obsDir, light, spotFactor);
         } else {
-            specularColor += specularPhong(lightDir, faceNormal, obsDir, light);
+            specularColor += specularPhong(lightDir, faceNormal, obsDir, light, spotFactor);
         }
     }
 
