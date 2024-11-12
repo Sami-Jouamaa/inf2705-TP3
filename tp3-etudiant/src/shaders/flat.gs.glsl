@@ -53,11 +53,11 @@ layout (std140) uniform LightingBlock
 };
 
 vec3 calculateNormal() {
-    vec4 pos1 = modelView * vec4(attribIn[0].position, 1);
-    vec4 pos2 = modelView * vec4(attribIn[1].position, 1);
-    vec4 pos3 = modelView * vec4(attribIn[2].position, 1);
-    vec3 side1 = pos2.xyz - pos1.xyz;
-    vec3 side2 = pos3.xyz - pos1.xyz;
+    vec3 pos1 = attribIn[0].position;
+    vec3 pos2 = attribIn[1].position;
+    vec3 pos3 = attribIn[2].position;
+    vec3 side1 = pos2 - pos1;
+    vec3 side2 = pos3 - pos1;
     return normalize(normalMatrix * cross(side1, side2));
 }
 
@@ -97,7 +97,7 @@ void main()
         attribOut.ambient = ambientColor;
         attribOut.emission = mat.emission;
         attribOut.diffuse = diffuseColor;
-        attribOut.specular = faceNormal;
+        attribOut.specular = specularColor;
         gl_Position = gl_in[i].gl_Position;
         EmitVertex();
     }
