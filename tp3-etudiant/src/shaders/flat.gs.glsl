@@ -95,7 +95,7 @@ void main()
             float cosGamma = dot(lightDir, normalize(light.spotDirection));
             float minVal = cos(radians(spotOpeningAngle));
             if (cosGamma < minVal) {
-                spotFactor = 0.0;
+                spotFactor = 2.0;
             }
             else {
                 if (useDirect3D) {
