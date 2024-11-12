@@ -14,6 +14,8 @@ uniform mat4 mvp;
 void main()
 {
     // TODO
-    // attribOut.texCoords = texCoords;
-    // attribOut.position = mvp * vec4(position, 1);
+    attribOut.texCoords = texCoords;
+    vec4 transformedPos = mvp * vec4(position, 1);  
+    attribOut.position = position.xyz;
+    gl_Position = transformedPos;
 }
