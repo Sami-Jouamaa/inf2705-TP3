@@ -60,14 +60,12 @@ vec3 calculateNormal() {
 
 void main()
 {
-    Material material = LightingBlock.mat;
-
     // Calucation of face values
     vec3 faceNormal = calculateNormal();
     vec3 center = (modelView * vec4((attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0, 1)).xyz;
     
     // Initialisation of light colors
-    vec3 ambientColor = material.ambient * LightingBlock.lightModelAmbient;
+    vec3 ambientColor = mat.ambient * lightModelAmbient;
     vec3 diffuseColor = vec3(0.0);
     vec3 specularColor = vec3(0.0);
 
@@ -75,26 +73,26 @@ void main()
     vec3 obsDir = normalize(-center);
 
     for (int i = 0; i < 3; i++) {
-        UniversalLight light = LightingBlock.lights[i];
+        UniversalLight light = lights[i];
         vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
 
-        ambientColor += material.ambient * light.ambient;
-        diffuseColor += material.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
-        if (LightingBlock.useBlinn) {
+        ambientColor += mat.ambient * light.ambient;
+        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
+        if (useBlinn) {
             vec3 halfwayVector = normalize((lightDir + obsDir));
-            float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), material.shininess);
-            specularColor += material.specular * light.specular * intensity;
+            float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
+            specularColor += mat.specular * light.specular * intensity;
         } else {
             vec3 reflectionDir = reflect(-lightDir, faceNormal);
-            float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), material.shininess);
-            specularColor += material.specular * light.specular * intensity;
+            float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
+            specularColor += mat.specular * light.specular * intensity;
         }
     }
 
     for (int i = 0; i < 3; i++) {
         attribOut.texCoords = attribIn[i].texCoords;
         attribOut.ambient = ambientColor;
-        attribOut.emission = material.emission;
+        attribOut.emission = mat.emission;
         attribOut.diffuse = diffuseColor;
         attribOut.specular = specularColor;
         EmitVertex();
