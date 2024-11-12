@@ -72,22 +72,7 @@ void main()
     // direction vector to observer for specular
     vec3 obsDir = normalize(-center);
 
-    for (int i = 0; i < 3; i++) {
-        UniversalLight light = lights[i];
-        vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
 
-        ambientColor += mat.ambient * light.ambient;
-        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
-        if (useBlinn) {
-            vec3 halfwayVector = normalize((lightDir + obsDir));
-            float intensity = pow(max(dot(faceNormal, halfwayVector), 0.0), mat.shininess);
-            specularColor += mat.specular * light.specular * intensity;
-        } else {
-            vec3 reflectionDir = reflect(-lightDir, faceNormal);
-            float intensity = pow(max(dot(obsDir, reflectionDir), 0.0), mat.shininess);
-            specularColor += mat.specular * light.specular * intensity;
-        }
-    }
 
     for (int i = 0; i < 3; i++) {
         attribOut.texCoords = attribIn[i].texCoords;
