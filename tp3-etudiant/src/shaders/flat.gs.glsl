@@ -53,8 +53,8 @@ layout (std140) uniform LightingBlock
 };
 
 vec3 calculateNormal() {
-    vec3 side1 = position[1] - position[0];
-    vec3 side2 = position[2] - position[0];
+    vec3 side1 = attribIn[1].position - attribIn[0].position;
+    vec3 side2 = attribIn[2].position - attribIn[0].position;
     return normalize(normalMatrix * cross(side1, side2));
 }
 
@@ -64,7 +64,7 @@ void main()
 
     // Calucation of face values
     vec3 faceNormal = calculateNormal();
-    vec3 center = modelView * ((attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0);
+    vec3 center = (modelView * vec4((attribIn[0].position + attribIn[1].position + attribIn[2].position) / 3.0, 1)).xyz;
     
     // Initialisation of light colors
     vec3 ambientColor = material.ambient * LightingBlock.lightModelAmbient;
