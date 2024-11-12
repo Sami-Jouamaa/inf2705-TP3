@@ -73,19 +73,7 @@ void specularPhong(inout vec3 specularColor, in vec3 lightDir, in vec3 faceNorma
     specularColor += mat.specular * light.specular * intensity;
 }
 
-void blinnPhongModelCalculation(in vec3 center, in UniversalLight light, inout vec3 ambientColor, inout vec3 diffuseColor, inout vec3 specularColor) {
-    vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
-
-    ambientColor += mat.ambient * light.ambient;
-    diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
-
-    vec3 obsDir = normalize(-center);
-    if (useBlinn) {
-        specularBlinn(specularColor, lightDir, faceNormal, obsDir);
-    } else {
-        specularPhong(specularColor, lightDir, faceNormal, obsDir);
-    }
-}
+void blinnPhongModelCalculation(inout vec3 ambientColor, inout vec3)
 
 void main()
 {
@@ -102,7 +90,16 @@ void main()
 
     for (int i = 0; i < 3; i++) {
         UniversalLight light = lights[i];
-        blinnPhongModelCalculation(center, light, ambientColor, diffuseColor, specularColor);
+        vec3 lightDir = normalize((view * vec4(light.position, 1)).xyz - center);
+
+        ambientColor += mat.ambient * light.ambient;
+        diffuseColor += mat.diffuse * light.diffuse * max(dot(faceNormal, lightDir), 0.0);
+        vec3 obsDir = normalize(-center);
+        if (useBlinn) {
+            specularBlinn(specularColor, lightDir, faceNormal, obsDir);
+        } else {
+            specularPhong(specularColor, lightDir, faceNormal, obsDir);
+        }
     }
 
     for (int i = 0; i < 3; i++) {
