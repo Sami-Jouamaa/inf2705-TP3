@@ -17,13 +17,6 @@ out vec4 FragColor;
 void main()
 {
     // TODO
-    vec4 specularTexture = texture(specularSampler, attribIn.texCoords);
-    vec4 texture = texture(diffuseSampler, attribIn.texCoords);
-    vec3 colour = vec3(0);
-    colour += attribIn.ambient;
-    colour += attribIn.diffuse;
-    colour *= texture.rgb;
-    colour += attribIn.emission;
-    colour += attribIn.specular * specularTexture[0];
-    FragColor = vec4(clamp(colour, 0.0, 1.0), 1.0);
+        FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Solid red for testing
+
 }
