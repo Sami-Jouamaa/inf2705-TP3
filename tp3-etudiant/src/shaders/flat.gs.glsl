@@ -92,7 +92,7 @@ void main()
         }
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         attribOut.texCoords = attribIn[i].texCoords;
         attribOut.ambient = ambientColor;
         attribOut.emission = mat.emission;
