@@ -97,7 +97,7 @@ void main()
         attribOut.ambient = ambientColor;
         attribOut.emission = mat.emission;
         attribOut.diffuse = diffuseColor;
-        attribOut.specular = specularColor;
+        attribOut.specular = faceNormal;
         gl_Position = gl_in[i].gl_Position;
         EmitVertex();
     }
