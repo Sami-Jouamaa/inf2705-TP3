@@ -188,8 +188,8 @@ void SceneLighting::updateInput(Window& w)
     int x = 0, y = 0;
     if (m_isMouseMotionEnabled)
         w.getMouseMotion(x, y);
-    m_cameraOrientation.y -= x * 0.00001f;
-    m_cameraOrientation.x -= y * 0.00001f;
+    m_cameraOrientation.y -= x * 0.0001f;
+    m_cameraOrientation.x -= y * 0.0001f;
 }
 
 void SceneLighting::drawMenu()
