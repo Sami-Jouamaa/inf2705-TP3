@@ -98,6 +98,7 @@ void main()
         attribOut.emission = mat.emission;
         attribOut.diffuse = diffuseColor;
         attribOut.specular = specularColor;
+        gl_Position = mvp * vec4(position, 1);
         EmitVertex();
     }
     
