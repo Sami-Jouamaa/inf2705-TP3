@@ -73,8 +73,6 @@ void specularPhong(inout vec3 specularColor, in vec3 lightDir, in vec3 faceNorma
     specularColor += mat.specular * light.specular * intensity;
 }
 
-void blinnPhongModelCalculation(inout vec3 ambientColor, inout vec3)
-
 void main()
 {
     // Calucation of face values
