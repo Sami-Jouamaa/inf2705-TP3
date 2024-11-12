@@ -25,5 +25,5 @@ void main()
     colour *= texture.rgb;
     colour += attribIn.emission;
     colour += attribIn.specular * specularTexture[0];
-    FragColor = vec4(colour, 1); 
+    FragColor = vec4(clamp(colour, 0.0, 1.0), 1.0);
 }
