@@ -93,13 +93,13 @@ void main()
         float spotFactor = 1.0;
         if (useSpotlight) {
             float cosGamma = dot(lightDir, light.spotDirection);
-            float minVal = cos(spotOpeningAngle);
+            float minVal = cos(radians(spotOpeningAngle));
             if (cosGamma < minVal) {
                 spotFactor = 0.0;
             }
             else {
                 if (useDirect3D) {
-                float inner = 0.1;
+                float inner = min(minVal * 1.5, 1.0);
                 spotFactor = smoothstep(minVal, minVal + inner, cosGamma);
                 } else {
                 spotFactor = pow(cosGamma, spotExponent);
