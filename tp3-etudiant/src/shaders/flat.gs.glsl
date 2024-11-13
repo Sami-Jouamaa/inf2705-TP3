@@ -89,7 +89,7 @@ void main()
     for (int i = 0; i < 3; i++) {
         UniversalLight light = lights[i];
         ambientColor += mat.ambient * light.ambient;
-        vec3 lightDir = normalize((view * vec4(light.position, 0.0)).xyz - center);
+        vec3 lightDir = normalize((view * vec4(light.position, 1.0)).xyz - center);
         float spotFactor = 1.0;
         if (useSpotlight) {
             vec3 spotDirectionView = normalize((view * vec4(light.spotDirection, 0.0)).xyz);
