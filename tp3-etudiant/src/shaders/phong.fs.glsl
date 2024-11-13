@@ -101,7 +101,7 @@ void main()
 
     if (useSpotlight) {
         for (int i = 0; i < 3; i++) {
-            float cosGamma = max(dot(-attribIn.lightDir[i], normalize(attribIn.spotDir[i])), 0.0);
+            float cosGamma = max(dot(-normalize(attribIn.lightDir[i]), normalize(attribIn.spotDir[i])), 0.0);
             float maxCos = max(cos(radians(spotOpeningAngle)), 0.0);
             if (cosGamma < maxCos) {
                 spotFactors[i] = 0.0;
@@ -110,7 +110,7 @@ void main()
                     float cosInner = min(maxCos * 2, 1.0);
                     spotFactors[i] = smoothstep(maxCos, cosInner, cosGamma);
                 } else {
-                    spotFactors[i] = 2.0;
+                    spotFactors[i] = pow(cosGamma, spotExponent);
                 }
             }
         }
