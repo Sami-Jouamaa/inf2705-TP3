@@ -95,7 +95,6 @@ void main()
     // TODO
     vec3 O = normalize(attribIn.obsPos);
     vec3 N = normalize(attribIn.normal);
-    vec4 texture = texture(diffuseSampler, attribIn.texCoords);
     vec3 specularTemp = vec3(0.0);
     float spotFactors[3] = float[3](1.0, 1.0, 1.0);
 
@@ -126,5 +125,7 @@ void main()
     }
 
     vec3 color = ambientTemp + diffuseTemp + specularTemp;
+    vec4 texture = texture(diffuseSampler, attribIn.texCoords);
+    color *= texture.rgb;
     FragColor = vec4(color, 1.0);
 }
