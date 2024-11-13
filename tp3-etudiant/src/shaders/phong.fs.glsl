@@ -125,5 +125,6 @@ void main()
         specularTemp = calculateNormalSpecular(O, N, spotFactors);
     }
 
-    FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
+    vec3 color = ambientTemp + diffuseTemp + specularTemp;
+    FragColor = vec4(color, 1.0);
 }
