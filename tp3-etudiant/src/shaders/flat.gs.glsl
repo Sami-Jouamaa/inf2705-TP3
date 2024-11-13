@@ -99,8 +99,8 @@ void main()
                 spotFactor = 0.0;
             } else {
                 if (useDirect3D) {
-                    float edgeWidth = 0.1;
-                    spotFactor = smoothstep(minVal - edgeWidth, minVal, cosGamma);
+                    float innerAngle = maxGamma / 2;
+                    spotFactor = smoothstep(cos(maxGamma), cos(innerAngle), cosGamma);
                 } else {
                     spotFactor = pow(cosGamma, spotExponent);
                 }
