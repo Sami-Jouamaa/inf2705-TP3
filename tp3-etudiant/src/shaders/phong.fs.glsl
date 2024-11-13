@@ -163,7 +163,7 @@ vec3 calculateSpotNormalSpecular(vec3 O, vec3 N)
                 float spec = max(0.0, dot(reflect(-L, N), O));
                 specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
             }
-        // }
+        }
     }
     return specularResult * vec3(texture(specularSampler, attribIn.texCoords));
 }
