@@ -96,10 +96,10 @@ vec3 calculateSpotAmbient()
     vec3 ambientResult = mat.emission + mat.ambient * lightModelAmbient;
     for (int i = 0; i < 3; i++)
     {
-        vec3 L = normalize(attribIn.spotDir[i]);
+        vec3 L = normalize(attribIn.obsPos - lights[i].position);
         vec3 S = normalize(-lights[i].spotDirection);
         angle = max(0.0, dot(L, S));
-        if (angle < cos(spotOpeningAngle))
+        if (angle > spotOpeningAngle)
         {
             continue;
         }
@@ -107,12 +107,13 @@ vec3 calculateSpotAmbient()
         {
             if (useDirect3D)
             {
-                float factor = smoothstep(pow(cos(spotOpeningAngle), 1.01 + spotExponent/2), cos(spotOpeningAngle), dot(attribIn.spotDir[i], lights[i].spotDirection));
-                ambientResult += mat.ambient * factor;
+                float factor = smoothstep(cos(spotOpeningAngle), cos(spotOpeningAngle) - 1, angle);
+                // float factor = smoothstep(pow(cos(spotOpeningAngle), 1.01 + spotExponent/2), cos(spotOpeningAngle), dot(attribIn.spotDir[i], lights[i].spotDirection));
+                ambientResult += mat.ambient * factor * lights[i].ambient;
             }
             else
             {
-                float factor = pow(dot(attribIn.spotDir[i], lights[i].spotDirection), spotExponent);
+                float factor = pow(angle, spotExponent);
                 ambientResult += mat.ambient * factor * lights[i].ambient;
             }
         }
@@ -127,7 +128,7 @@ vec3 calculateSpotDiffuse(vec3 O, vec3 N)
     {
         vec3 L = normalize(attribIn.spotDir[i]);
         float angle = max(0.0, dot(L, N));
-        if (angle < cos(spotOpeningAngle))
+        if (angle < spotOpeningAngle)
         {
             diffuseResult += mat.diffuse * lights[i].diffuse * pow(cos(angle), spotExponent);
         }
@@ -146,8 +147,9 @@ vec3 calculateSpotNormalSpecular(vec3 O, vec3 N)
     {
         vec3 L = normalize(attribIn.spotDir[i]);
         vec3 D = normalize(lights[i].spotDirection);
+        float angle = dot(L, D); // angle seems to be one, when only returning angle, the ball is white
         // something like that, everything is black though
-        if (dot(L, D) < cos(spotOpeningAngle))
+        if (angle < cos(spotOpeningAngle))
         {
             continue;
         }
@@ -155,13 +157,15 @@ vec3 calculateSpotNormalSpecular(vec3 O, vec3 N)
         {
             if (useBlinn)
             {
+                float factor = pow(angle, spotExponent);
                 float spec = max(0.0, dot(normalize(L + O), N));
-                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * factor;
             }
             else
             {
+                float factor = pow(angle, spotExponent);
                 float spec = max(0.0, dot(reflect(-L, N), O));
-                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * factor;
             }
         }
     }
@@ -183,8 +187,8 @@ void main()
         vec3 ambientTemp = calculateSpotAmbient();
         vec3 diffuseTemp = calculateSpotDiffuse(O, N);
         specularTemp = calculateSpotNormalSpecular(O, N);
-        // FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
-        FragColor = vec4(specularTemp, 1);
+        FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
+        // FragColor = vec4(specularTemp, 1); // if you want to test separate components
     }
     else
     {
