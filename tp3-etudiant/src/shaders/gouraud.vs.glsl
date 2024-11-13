@@ -63,7 +63,7 @@ void main()
         UniversalLight light = lights[i];
         ambientTemp += mat.ambient * light.ambient;
 
-        vec3 L = normalize((view * vec4(lights[0].position, 1)).xyz - pos);
+        vec3 L = normalize((view * vec4(light.position, 1)).xyz - pos);
         float spotFactor = 1.0;
         if(useSpotlight) {
             vec3 spotDirectionView = normalize((view * vec4(light.spotDirection, 0.0)).xyz);
