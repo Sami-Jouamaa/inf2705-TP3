@@ -110,7 +110,7 @@ void main()
                     float cosInner = min(maxCos * 2, 1.0);
                     spotFactors[i] = smoothstep(maxCos, cosInner, cosGamma);
                 } else {
-                    spotFactors[i] = pow(cosGamma, spotExponent);
+                    spotFactors[i] = 2.0;
                 }
             }
         }
