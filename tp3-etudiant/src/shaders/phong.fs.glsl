@@ -148,7 +148,8 @@ void main()
     vec3 N = normalize(attribIn.normal);
     vec4 texture = texture(diffuseSampler, attribIn.texCoords);
     vec3 specularTemp = vec3(0.0);
-    float[3] spotFactors = [1.0, 1.0, 1.0];
+    float spotFactors[3] = float[3](1.0, 1.0, 1.0);
+
     if (useSpotlight) {
         for (int i = 0; i < 3; i++) {
             vec3 spotDir = attribIn.spotDir[i];
