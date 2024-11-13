@@ -99,7 +99,7 @@ void main()
                 spotFactor = 0.0;
             } else {
                 if (useDirect3D) {
-                    float cosInner = 0.95;
+                    float cosInner = min(maxCos * 2, 1.0);
                     spotFactor = smoothstep(maxCos, cosInner, cosGamma);
                 } else {
                     spotFactor = pow(cosGamma, spotExponent);
