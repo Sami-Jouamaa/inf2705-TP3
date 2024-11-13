@@ -152,7 +152,7 @@ void main()
 
     if (useSpotlight) {
         for (int i = 0; i < 3; i++) {
-            float cosGamma = max(dot(-lightDir[i], normalize(attribIn.spotDir[i])), 0.0);
+            float cosGamma = max(dot(-attribIn.lightDir[i], normalize(attribIn.spotDir[i])), 0.0);
             float maxCos = max(cos(radians(spotOpeningAngle)), 0.0);
             if (cosGamma < maxCos) {
                 spotFactors[i] = 0.0;
