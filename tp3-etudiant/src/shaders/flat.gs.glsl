@@ -99,7 +99,7 @@ void main()
                 spotFactor = 0.0;
             } else {
                 if (useDirect3D) {
-                    float innerAngle = maxGamma / 2;
+
                 } else {
                     spotFactor = pow(cosGamma, spotExponent);
                 }
