@@ -60,7 +60,7 @@ void main()
     vec3 specularTemp = vec3(0.0);
 
     for (int i = 0; i < 3; i++) {
-        UniversalLight light = lights[i].position;
+        UniversalLight light = lights[i];
         ambientTemp += mat.ambient * light.ambient;
 
         vec3 L = normalize((view * vec4(lights[0].position, 1)).xyz - pos);
