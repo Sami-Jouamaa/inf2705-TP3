@@ -52,51 +52,44 @@ void main()
 {
     // TODO
     vec3 pos = (modelView * vec4(position, 1)).xyz;
-    vec3 fakeLight0 = (view * vec4(lights[0].position, 1)).xyz - pos;
-    vec3 fakeLight1 = (view * vec4(lights[1].position, 1)).xyz - pos;
-    vec3 fakeLight2 = (view * vec4(lights[2].position, 1)).xyz - pos;    
-
     vec3 O = normalize(-pos);
     vec3 N = normalize((normalMatrix * normal));
-    vec3 L0 = normalize(fakeLight0);
-    vec3 L1 = normalize(fakeLight1);
-    vec3 L2 = normalize(fakeLight2);
 
-    vec3 ambientTemp;
-    vec3 diffuseTemp;
-    vec3 specularTemp;
+    vec3 ambientTemp = mat.ambient * lightModelAmbient;
+    vec3 diffuseTemp = vec3(0.0);
+    vec3 specularTemp = vec3(0.0);
 
-    ambientTemp = mat.ambient * lightModelAmbient;
-    for (int i = 0; i < 3; i++)
-    {
-        ambientTemp += mat.ambient * lights[i].ambient;
+    for (int i = 0; i < 3; i++) {
+        UniversalLight light = lights[i].position;
+        ambientTemp += mat.ambient * light.ambient;
+
+        vec3 L = normalize((view * vec4(lights[0].position, 1)).xyz - pos);
+        float spotFactor = 1.0;
+        if(useSpotlight) {
+            vec3 spotDirectionView = normalize((view * vec4(light.spotDirection, 0.0)).xyz);
+            float cosGamma = max(dot(-L, normalize(spotDirectionView)), 0.0);
+            float maxCos = max(cos(radians(spotOpeningAngle)), 0.0);
+            if (cosGamma < maxCos) {
+                spotFactor = 0.0;
+            } else {
+                if (useDirect3D) {
+                    float cosInner = min(maxCos * 2, 1.0);
+                    spotFactor = smoothstep(maxCos, cosInner, cosGamma);
+                } else {
+                    spotFactor = pow(cosGamma, spotExponent);
+                }
+            }
+        }
+        float NdotL = max(0.0, dot(N, L));
+        diffuseTemp += mat.diffuse * light.diffuse * NdotL * spotFactor;
+        float specFact;
+        if (useBlinn) {
+            specFact = max(0.0, dot(normalize(L + O), N));
+        } else {
+            specFact = max(0.0, dot(reflect(-L, N), O));
+        }
+        specularTemp += mat.specular * light.specular * pow(specFact, mat.shininess) * spotFactor;
     }
-
-    float NdotL0 = max(0.0, dot(N, L0));
-    float NdotL1 = max(0.0, dot(N, L1));
-    float NdotL2 = max(0.0, dot(N, L2));
-    diffuseTemp = mat.diffuse * lights[0].diffuse * NdotL0;
-    diffuseTemp += mat.diffuse * lights[1].diffuse * NdotL1;
-    diffuseTemp += mat.diffuse * lights[2].diffuse * NdotL2;
-
-    float spec0;
-    float spec1;
-    float spec2;
-    if (useBlinn)
-    {
-        spec0 = max(0.0, dot(normalize(L0 + O), N));
-        spec1 = max(0.0, dot(normalize(L1 + O), N));
-        spec2 = max(0.0, dot(normalize(L2 + O), N));
-    }
-    else
-    {
-        spec0 = max(0.0, dot(reflect(-L0, N), O));
-        spec1 = max(0.0, dot(reflect(-L1, N), O));
-        spec2 = max(0.0, dot(reflect(-L2, N), O));
-    }
-    specularTemp = mat.specular * lights[0].specular * pow(spec0, mat.shininess);
-    specularTemp += mat.specular * lights[1].specular * pow(spec1, mat.shininess);
-    specularTemp += mat.specular * lights[2].specular * pow(spec2, mat.shininess);
 
     gl_Position = mvp * vec4(position, 1);
     attribOut.texCoords = texCoords;
