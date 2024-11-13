@@ -56,7 +56,7 @@ vec3 calculateAmbientTemp()
 
 vec3 calculateDiffuseTemp(vec3 N, float[3] spotFactors)
 {
-    vec3 diffuseResult = vec3(0);
+    vec3 diffuseResult = vec3(0.0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
@@ -68,7 +68,7 @@ vec3 calculateDiffuseTemp(vec3 N, float[3] spotFactors)
 
 vec3 calculateSpecularBlinn(vec3 O, vec3 N, float[3] spotFactors)
 {
-    vec3 specularResult = vec3(0);
+    vec3 specularResult = vec3(0.0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
@@ -80,7 +80,7 @@ vec3 calculateSpecularBlinn(vec3 O, vec3 N, float[3] spotFactors)
 
 vec3 calculateNormalSpecular(vec3 O, vec3 N, float[3] spotFactors)
 {
-    vec3 specularResult = vec3(0);
+    vec3 specularResult = vec3(0.0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
@@ -88,57 +88,6 @@ vec3 calculateNormalSpecular(vec3 O, vec3 N, float[3] spotFactors)
         specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * spotFactors[i];
     }
     return specularResult;
-}
-
-vec3 calculateSpotDiffuse(vec3 O, vec3 N)
-{
-    vec3 diffuseResult = vec3(0);
-    for (int i = 0; i < 3; i++)
-    {
-        vec3 L = normalize(attribIn.spotDir[i]);
-        float angle = max(0.0, dot(L, N));
-        if (angle < spotOpeningAngle)
-        {
-            diffuseResult += mat.diffuse * lights[i].diffuse * pow(cos(angle), spotExponent);
-        }
-        else
-        {
-            continue;
-        }
-    }
-    return diffuseResult * vec3(texture(diffuseSampler, attribIn.texCoords));
-}
-
-vec3 calculateSpotNormalSpecular(vec3 O, vec3 N)
-{
-    vec3 specularResult = vec3(0);
-    for (int i = 0; i < 3; i++)
-    {
-        vec3 L = normalize(attribIn.spotDir[i]);
-        vec3 D = normalize(lights[i].spotDirection);
-        float angle = dot(L, D); // angle seems to be one, when only returning angle, the ball is white
-        // something like that, everything is black though
-        if (angle < cos(spotOpeningAngle))
-        {
-            continue;
-        }
-        else
-        {
-            if (useBlinn)
-            {
-                float factor = pow(angle, spotExponent);
-                float spec = max(0.0, dot(normalize(L + O), N));
-                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * factor;
-            }
-            else
-            {
-                float factor = pow(angle, spotExponent);
-                float spec = max(0.0, dot(reflect(-L, N), O));
-                specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * factor;
-            }
-        }
-    }
-    return specularResult * vec3(texture(specularSampler, attribIn.texCoords));
 }
 
 void main()
