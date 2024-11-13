@@ -54,71 +54,40 @@ vec3 calculateAmbientTemp()
     return ambientResult;
 }
 
-vec3 calculateDiffuseTemp(vec3 N)
+vec3 calculateDiffuseTemp(vec3 N, float[3] spotFactors)
 {
     vec3 diffuseResult = vec3(0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
         float NdotL = max(0.0, dot(N, L));
-        diffuseResult += mat.diffuse * lights[i].diffuse * NdotL;
+        diffuseResult += mat.diffuse * lights[i].diffuse * NdotL * spotFactors[i];
     }
     return diffuseResult;
 }
 
-vec3 calculateSpecularBlinn(vec3 O, vec3 N)
+vec3 calculateSpecularBlinn(vec3 O, vec3 N, float[3] spotFactors)
 {
     vec3 specularResult = vec3(0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
         float spec = max(0.0, dot(normalize(L + O), N));
-        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * spotFactors[i];
     }
     return specularResult;
 }
 
-vec3 calculateNormalSpecular(vec3 O, vec3 N)
+vec3 calculateNormalSpecular(vec3 O, vec3 N, float[3] spotFactors)
 {
     vec3 specularResult = vec3(0);
     for (int i = 0; i < 3; i++)
     {
         vec3 L = normalize(attribIn.lightDir[i]);
         float spec = max(0.0, dot(reflect(-L, N), O));
-        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess);
+        specularResult += mat.specular * lights[i].specular * pow(spec, mat.shininess) * spotFactors[i];
     }
     return specularResult;
-}
-
-vec3 calculateSpotAmbient()
-{
-    float angle;
-    vec3 ambientResult = mat.emission + mat.ambient * lightModelAmbient;
-    for (int i = 0; i < 3; i++)
-    {
-        vec3 L = normalize(attribIn.obsPos - lights[i].position);
-        vec3 S = normalize(-lights[i].spotDirection);
-        angle = max(0.0, dot(L, S));
-        if (angle > spotOpeningAngle)
-        {
-            continue;
-        }
-        else
-        {
-            if (useDirect3D)
-            {
-                float factor = smoothstep(cos(spotOpeningAngle), cos(spotOpeningAngle) - 1, angle);
-                // float factor = smoothstep(pow(cos(spotOpeningAngle), 1.01 + spotExponent/2), cos(spotOpeningAngle), dot(attribIn.spotDir[i], lights[i].spotDirection));
-                ambientResult += mat.ambient * factor * lights[i].ambient;
-            }
-            else
-            {
-                float factor = pow(angle, spotExponent);
-                ambientResult += mat.ambient * factor * lights[i].ambient;
-            }
-        }
-    }
-    return ambientResult;
 }
 
 vec3 calculateSpotDiffuse(vec3 O, vec3 N)
@@ -178,33 +147,34 @@ void main()
     vec3 O = normalize(attribIn.obsPos);
     vec3 N = normalize(attribIn.normal);
     vec4 texture = texture(diffuseSampler, attribIn.texCoords);
-    vec3 specularTemp = vec3(0);
-    if (useSpotlight)
-    {
-        vec3 L0 = normalize(attribIn.spotDir[0]);
-        vec3 L1 = normalize(attribIn.spotDir[1]);
-        vec3 L2 = normalize(attribIn.spotDir[2]);
-        vec3 ambientTemp = calculateSpotAmbient();
-        vec3 diffuseTemp = calculateSpotDiffuse(O, N);
-        specularTemp = calculateSpotNormalSpecular(O, N);
-        FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
-        // FragColor = vec4(specularTemp, 1); // if you want to test separate components
-    }
-    else
-    {
-        vec3 ambientTemp = calculateAmbientTemp();
-        vec3 diffuseTemp = calculateDiffuseTemp(N);
-        if (useBlinn)
-        {
-            specularTemp = calculateSpecularBlinn(O, N);
+    vec3 specularTemp = vec3(0.0);
+    float[3] spotFactors = [1.0, 1.0, 1.0];
+    if (useSpotlight) {
+        for (int i = 0; i < 3; i++) {
+            vec3 spotDir = attribIn.spotDir[i];
+            float cosGamma = max(dot(-lightDir[i], normalize(spotDirectionView)), 0.0);
+            float maxCos = max(cos(radians(spotOpeningAngle)), 0.0);
+            if (cosGamma < maxCos) {
+                spotFactors[i] = 0.0;
+            } else {
+                if (useDirect3D) {
+                    float cosInner = min(maxCos * 2, 1.0);
+                    spotFactors[i] = smoothstep(maxCos, cosInner, cosGamma);
+                } else {
+                    spotFactors[i] = pow(cosGamma, spotExponent);
+                }
+            }
         }
-        else
-        {
-            specularTemp = calculateNormalSpecular(O, N);
-        }
+    } 
 
-        FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
-
+    vec3 ambientTemp = calculateAmbientTemp();
+    vec3 diffuseTemp = calculateDiffuseTemp(N, spotFactors);
+    if (useBlinn) {
+        specularTemp = calculateSpecularBlinn(O, N, spotFactors);
+    }
+    else {
+        specularTemp = calculateNormalSpecular(O, N, spotFactors);
     }
 
+    FragColor = vec4(ambientTemp + diffuseTemp + specularTemp, 1);
 }
